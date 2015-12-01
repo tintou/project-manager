@@ -28,6 +28,8 @@ public class ProjectManager.MainWindow : Gtk.Window {
     private Panels.Blueprints blueprints_panel;
     private Panels.Bugs bugs_panel;
 
+    private LaunchpadPlatform lp_platform;
+
     public MainWindow () {
         window_position = Gtk.WindowPosition.CENTER;
         title = _("Project Manager");
@@ -37,17 +39,21 @@ public class ProjectManager.MainWindow : Gtk.Window {
         var stack = new Gtk.Stack ();
         stack.transition_type = Gtk.StackTransitionType.SLIDE_LEFT_RIGHT;
 
-        project_combobox = new Gtk.ComboBoxText.with_entry ();
+        project_combobox = new Gtk.ComboBoxText ();
 
         var stack_switcher = new Gtk.StackSwitcher ();
         stack_switcher.set_stack (stack);
 
         search_entry = new Gtk.SearchEntry ();
 
+        var manager_button = new Gtk.Button.from_icon_name ("folder-saved-search", Gtk.IconSize.LARGE_TOOLBAR);
+        manager_button.tooltip_text = _("Manage Projects List…");
+
         var headerbar = new Gtk.HeaderBar ();
         headerbar.show_close_button = true;
         headerbar.set_custom_title (stack_switcher);
         headerbar.pack_start (project_combobox);
+        headerbar.pack_start (manager_button);
         headerbar.pack_end (search_entry);
         set_titlebar (headerbar);
 
@@ -74,9 +80,19 @@ public class ProjectManager.MainWindow : Gtk.Window {
                 break;
         }
 
-        project_combobox.changed.connect (() => {
-            warning (project_combobox.get_active_text ());
+        lp_platform = new LaunchpadPlatform ();
+
+        manager_button.clicked.connect (() => {
+            var dialog = new ProjectList ();
+            dialog.attached_to = this;
+            dialog.show_all ();
+            dialog.run ();
+            dialog.destroy ();
         });
+    }
+
+    private void search_project (GLib.Cancellable cancellable) {
+        var projects = lp_platform.search_project (project_combobox.get_active_text (), cancellable);
     }
 
     public override bool delete_event (Gdk.EventAny event) {

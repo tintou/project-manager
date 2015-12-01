@@ -20,7 +20,25 @@
  * Authored by: Corentin Noël <corentin@elementary.io>
  */
 
-public abstract class ProjectManager.Platform : GLib.Object {
-    public string name { public get; construct; }
-    public abstract Gee.TreeSet<Project> search_project (string search, GLib.Cancellable cancellable);
+public class ProjectManager.Database : GLib.Object {
+    private static Database database;
+    public static Database get_default () {
+        if (database == null) {
+            database = new Database ();
+        }
+
+        return database;
+    }
+
+    private Database () {
+        
+    }
+
+    construct {
+        
+    }
+
+    public Gee.TreeSet<Project> get_saved_projects () {
+        return new Gee.TreeSet<Project> ();
+    }
 }

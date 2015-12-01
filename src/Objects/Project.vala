@@ -20,7 +20,14 @@
  * Authored by: Corentin Noël <corentin@elementary.io>
  */
 
-public abstract class ProjectManager.Platform : GLib.Object {
-    public string name { public get; construct; }
-    public abstract Gee.TreeSet<Project> search_project (string search, GLib.Cancellable cancellable);
+public abstract class ProjectManager.Project : GLib.Object {
+    public string uid { public get; construct; }
+    public string name { public get; private set; }
+    public string summary { public get; public set; }
+    public string description { public get; public set; }
+    public GLib.Icon icon { public get; public set; }
+    public GLib.Icon logo { public get; public set; }
+
+    public abstract bool load_project ();
+    public abstract Gee.TreeSet<Bug> get_bugs ();
 }
