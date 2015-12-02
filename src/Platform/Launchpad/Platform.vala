@@ -27,27 +27,18 @@ public class ProjectManager.LaunchpadPlatform : Platform {
         Object (name: "Launchpad");
     }
 
-    public override Gee.TreeSet<Project> search_project (string search, GLib.Cancellable cancellable) {
-        var projects = new Gee.TreeSet<Project> ();
-        var session = new Soup.Session ();
-        var msg = new Soup.Message ("GET", "%sprojects".printf (LAUNCHPAD_ROOT));
-        msg.request_headers.append ("ws.op", "search");
-        msg.request_headers.append ("text", search);
-        session.send_message (msg);
-        warning ("");
-        if (msg.status_code != Soup.Status.OK) {
-            return projects;
+    public override Project? get_project (string project_id, GLib.Cancellable cancellable, string? name = null) {
+        if (name == null) {
+            var session = new Soup.Session ();
+            var msg = new Soup.Message ("GET", "%s%s".printf (LAUNCHPAD_ROOT, project_id));
+            session.send_message (msg);
+            if (msg.status_code != Soup.Status.OK) {
+                return null;
+            }
         }
 
-        var parser = new Json.Parser ();
-        try {
-            parser.load_from_data ((string) msg.response_body.data);
-            warning ((string) msg.response_body.data);
-        } catch (Error e) {
-            critical (e.message);
-            return projects;
-        }
-
-        return projects;
+        var proj = new LaunchpadProject (project_id);
+        proj.name = name;
+        return proj;
     }
 }

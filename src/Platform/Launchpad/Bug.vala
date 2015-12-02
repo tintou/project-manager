@@ -20,7 +20,8 @@
  * Authored by: Corentin Noël <corentin@elementary.io>
  */
 
-public abstract class ProjectManager.Platform : GLib.Object {
-    public string name { public get; construct; }
-    public abstract Project? get_project (string project_id, GLib.Cancellable cancellable, string? name = null);
+public class ProjectManager.LaunchpadBug : Bug {
+    public LaunchpadBug (string uid, string summary) {
+        Object (uid: uid, summary: summary);
+    }
 }

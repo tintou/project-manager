@@ -22,12 +22,16 @@
 
 public abstract class ProjectManager.Project : GLib.Object {
     public string uid { public get; construct; }
-    public string name { public get; private set; }
+    public string name { public get; public set; }
     public string summary { public get; public set; }
     public string description { public get; public set; }
     public GLib.Icon icon { public get; public set; }
     public GLib.Icon logo { public get; public set; }
+    public bool loaded { public get; internal set; default=false; }
 
     public abstract bool load_project ();
     public abstract Gee.TreeSet<Bug> get_bugs ();
+    public void save () {
+    
+    }
 }

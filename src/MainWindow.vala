@@ -28,8 +28,6 @@ public class ProjectManager.MainWindow : Gtk.Window {
     private Panels.Blueprints blueprints_panel;
     private Panels.Bugs bugs_panel;
 
-    private LaunchpadPlatform lp_platform;
-
     public MainWindow () {
         window_position = Gtk.WindowPosition.CENTER;
         title = _("Project Manager");
@@ -80,19 +78,11 @@ public class ProjectManager.MainWindow : Gtk.Window {
                 break;
         }
 
-        lp_platform = new LaunchpadPlatform ();
-
         manager_button.clicked.connect (() => {
-            var dialog = new ProjectList ();
-            dialog.attached_to = this;
-            dialog.show_all ();
-            dialog.run ();
-            dialog.destroy ();
+            var popover = new ProjectList ();
+            popover.relative_to = manager_button;
+            popover.show_all ();
         });
-    }
-
-    private void search_project (GLib.Cancellable cancellable) {
-        var projects = lp_platform.search_project (project_combobox.get_active_text (), cancellable);
     }
 
     public override bool delete_event (Gdk.EventAny event) {

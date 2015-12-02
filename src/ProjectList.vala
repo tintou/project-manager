@@ -20,65 +20,86 @@
  * Authored by: Corentin Noël <corentin@elementary.io>
  */
 
-public class ProjectManager.ProjectList : Gtk.Dialog {
-    Gtk.TreeView treeview;
-    Gtk.ListStore list_store;
+public class ProjectManager.ProjectList : Gtk.Popover {
+    Gtk.ListBox list_box;
+    GLib.Cancellable cancellable;
     public ProjectList () {
-        set_size_request (400, 350);
-        /*uint search_behavior = 0U;
-        GLib.Cancellable cancellable = null;
+        
+    }
+
+    construct {
+        position = Gtk.PositionType.BOTTOM;
+        var grid = new Gtk.Grid ();
+        grid.orientation = Gtk.Orientation.VERTICAL;
+        var search_entry = new Gtk.SearchEntry ();
+        search_entry.margin = 6;
+        var scrolled = new Gtk.ScrolledWindow (null, null);
+        scrolled.margin_bottom = 6;
+        scrolled.hscrollbar_policy = Gtk.PolicyType.NEVER;
+        scrolled.set_size_request (-1, 150);
+        list_box = new Gtk.ListBox ();
+        scrolled.add (list_box);
+        grid.add (search_entry);
+        grid.add (scrolled);
+        add (grid);
+        search_entry.grab_focus ();
+
+        search_entry.activate.connect (() => add_available_project (search_entry.text));
+        search_entry.icon_release.connect ((p0, p1) => {
+            if (p0 == Gtk.EntryIconPosition.PRIMARY) {
+                add_available_project (search_entry.text);
+            }
+        });
+    }
+
+    private void add_available_project (string text) {
         if (cancellable != null)  {
             cancellable.cancel ();
         }
 
         cancellable = new GLib.Cancellable ();
-
-        if (search_behavior != 0U) {
-            Source.remove (search_behavior);
+        Project? project = null;
+        foreach (var platform in Database.get_default ().get_supported_platforms ()) {
+            project = platform.get_project (text, cancellable);
+            if (project != null) {
+                break;
+            }
         }
 
-        search_behavior = Timeout.add (150, () => {
-            search_project (cancellable);
-            search_behavior = 0;
-            return GLib.Source.REMOVE;
-        });*/
+        if (project != null) {
+            var projectrow = new ProjectListRow (project);
+            projectrow.show_all ();
+            list_box.add (projectrow);
+        }
     }
 
-    construct {
-        modal = true;
-        title = _("Manage Projects");
-        var grid = new Gtk.Grid ();
-        grid.margin = 6;
-        grid.margin_top = 0;
-        grid.orientation = Gtk.Orientation.VERTICAL;
-        list_store = new Gtk.ListStore (2, typeof (string), typeof (Project));
-        treeview = new Gtk.TreeView.with_model (list_store);
+    public class ProjectListRow : Gtk.ListBoxRow {
+        public Project project;
+        private Gtk.Image image;
+        private Gtk.Label title;
+        public ProjectListRow (Project project) {
+            this.project = project;
+            project.load_project ();
+            image.gicon = project.icon;
+            title.label = project.name;
+        }
 
-        var scrolled = new Gtk.ScrolledWindow (null, null);
-        scrolled.shadow_type = Gtk.ShadowType.IN;
-        scrolled.expand = true;
-        scrolled.add (treeview);
-
-        var toolbar = new Gtk.Toolbar ();
-        toolbar.icon_size = Gtk.IconSize.SMALL_TOOLBAR;
-        toolbar.get_style_context ().add_class (Gtk.STYLE_CLASS_INLINE_TOOLBAR);
-
-        var add_button = new Gtk.ToolButton (null, null);
-        add_button.icon_name = "list-add-symbolic";
-        add_button.tooltip_text = _("Add Project");
-
-        var remove_button = new Gtk.ToolButton (null, null);
-        remove_button.icon_name = "list-remove-symbolic";
-        remove_button.tooltip_text = _("Remove Selected Project");
-
-        toolbar.add (add_button);
-        toolbar.add (remove_button);
-
-        this.add_button (_("Close"), 0);
-        response.connect ((id) => destroy ());
-
-        grid.add (scrolled);
-        grid.add (toolbar);
-        get_content_area ().add (grid);
+        construct {
+            var grid = new Gtk.Grid ();
+            grid.orientation = Gtk.Orientation.HORIZONTAL;
+            grid.column_spacing = 12;
+            grid.margin = 6;
+            image = new Gtk.Image ();
+            image.icon_size = Gtk.IconSize.BUTTON;
+            title = new Gtk.Label (null);
+            ((Gtk.Misc) title).xalign = 0;
+            title.hexpand = true;
+            var delete_button = new Gtk.Button.from_icon_name ("edit-delete", Gtk.IconSize.MENU);
+            delete_button.get_style_context ().add_class (Gtk.STYLE_CLASS_FLAT);
+            grid.add (image);
+            grid.add (title);
+            grid.add (delete_button);
+            add (grid);
+        }
     }
 }

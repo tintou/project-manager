@@ -22,6 +22,7 @@ vala_precompile(VALA_C ${EXEC_NAME}
     Panels/Overview.vala
     Platform/Launchpad/Platform.vala
     Platform/Launchpad/Project.vala
+    Platform/Launchpad/Bug.vala
     ${CMAKE_CURRENT_BINARY_DIR}/config.vala
 PACKAGES
     gee-0.8
