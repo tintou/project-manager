@@ -23,8 +23,22 @@
 public class ProjectManager.Panels.Bugs : Gtk.Grid {
     Gtk.ListBox list_box;
     Gtk.ListBox bug_list_box;
-    public Bugs () {
-        
+    Project project;
+    bool populated = false;
+    public Bugs (Project project) {
+        this.project = project;
+    }
+
+    public void populate () {
+        if (populated) {
+            return;
+        }
+
+        foreach (var bug in project.get_bugs ()) {
+            
+        }
+
+        populated = true;
     }
 
     construct {

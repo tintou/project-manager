@@ -101,7 +101,7 @@ public class ProjectManager.Database : GLib.Object {
         }
 
         try {
-            connection = new Gda.Connection.from_string ("SQLite", "DB_DIR=%s;DB_NAME=%s".printf (database_dir.get_path (), ""), null, Gda.ConnectionOptions.NONE);
+            connection = new Gda.Connection.from_string ("SQLite", "DB_DIR=%s;DB_NAME=%s".printf (database_dir.get_path (), "project-manager-1"), null, Gda.ConnectionOptions.NONE);
             connection.open ();
         } catch (Error e) {
             error (e.message);

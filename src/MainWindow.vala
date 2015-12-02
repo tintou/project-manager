@@ -21,12 +21,10 @@
  */
 
 public class ProjectManager.MainWindow : Gtk.Window {
-    private Gtk.ComboBoxText project_combobox;
+    private Gtk.ComboBox project_combobox;
     private Gtk.SearchEntry search_entry;
-    private Panels.Overview overview_panel;
-    private Panels.Code code_panel;
-    private Panels.Blueprints blueprints_panel;
-    private Panels.Bugs bugs_panel;
+    private Gtk.StackSwitcher stack_switcher;
+    private Gtk.Stack main_stack;
 
     public MainWindow () {
         window_position = Gtk.WindowPosition.CENTER;
@@ -34,13 +32,16 @@ public class ProjectManager.MainWindow : Gtk.Window {
         icon_name = "apport";
         set_size_request (750, 550);
 
-        var stack = new Gtk.Stack ();
-        stack.transition_type = Gtk.StackTransitionType.SLIDE_LEFT_RIGHT;
+        main_stack = new Gtk.Stack ();
+        main_stack.transition_type = Gtk.StackTransitionType.OVER_UP_DOWN;
 
-        project_combobox = new Gtk.ComboBoxText ();
+        var list_store = new Gtk.ListStore (2, typeof (string), typeof (Project));
+        project_combobox = new Gtk.ComboBox.with_model (list_store);
+        var renderer = new Gtk.CellRendererText ();
+        project_combobox.pack_start (renderer, true);
+        project_combobox.add_attribute (renderer, "text", 0);
 
-        var stack_switcher = new Gtk.StackSwitcher ();
-        stack_switcher.set_stack (stack);
+        stack_switcher = new Gtk.StackSwitcher ();
 
         search_entry = new Gtk.SearchEntry ();
 
@@ -54,17 +55,7 @@ public class ProjectManager.MainWindow : Gtk.Window {
         headerbar.pack_start (manager_button);
         headerbar.pack_end (search_entry);
         set_titlebar (headerbar);
-
-
-        overview_panel = new Panels.Overview ();
-        code_panel = new Panels.Code ();
-        blueprints_panel = new Panels.Blueprints ();
-        bugs_panel = new Panels.Bugs ();
-        stack.add_titled (overview_panel, "overview", _("Overview"));
-        stack.add_titled (code_panel, "code", _("Code"));
-        stack.add_titled (blueprints_panel, "blueprints", _("Blueprints"));
-        stack.add_titled (bugs_panel, "bugs", _("Bugs"));
-        add (stack);
+        add (main_stack);
 
         unowned Settings saved_state = Settings.get_default ();
         set_default_size (saved_state.window_width, saved_state.window_height);
@@ -83,6 +74,23 @@ public class ProjectManager.MainWindow : Gtk.Window {
             popover.relative_to = manager_button;
             popover.show_all ();
         });
+
+        foreach (var project in Database.get_default ().get_saved_projects ()) {
+            Gtk.TreeIter iter;
+            list_store.append (out iter);
+            list_store.set (iter, 0, project.name, 1, project);
+        }
+
+        project_combobox.changed.connect (() => {
+            Value val;
+            Gtk.TreeIter iter;
+            project_combobox.get_active_iter (out iter);
+            list_store.get_value (iter, 1, out val);
+            var project = (Project) val.get_object ();
+            focus_project (project);
+        });
+
+        project_combobox.active = 0;
     }
 
     public override bool delete_event (Gdk.EventAny event) {
@@ -99,5 +107,32 @@ public class ProjectManager.MainWindow : Gtk.Window {
         }
 
         return false;
+    }
+
+    private void focus_project (Project project) {
+        var stack_name = "%s-%s".printf (project.platform, project.uid);
+        var stack = main_stack.get_child_by_name (stack_name) as Gtk.Stack;
+        if (stack == null) {
+            stack = new Gtk.Stack ();
+            stack.transition_type = Gtk.StackTransitionType.SLIDE_LEFT_RIGHT;
+
+            var overview_panel = new Panels.Overview ();
+            var code_panel = new Panels.Code ();
+            var blueprints_panel = new Panels.Blueprints ();
+            var bugs_panel = new Panels.Bugs (project);
+            stack.add_titled (overview_panel, "overview", _("Overview"));
+            stack.add_titled (code_panel, "code", _("Code"));
+            stack.add_titled (blueprints_panel, "blueprints", _("Blueprints"));
+            stack.add_titled (bugs_panel, "bugs", _("Bugs"));
+            stack.show_all ();
+            main_stack.add_named (stack, stack_name);
+        }
+
+        var bugs_panel = stack.get_child_by_name ("bugs") as Panels.Bugs;
+        bugs_panel.populate ();
+
+        stack_switcher.set_stack (stack);
+        stack_switcher.show_all ();
+        main_stack.set_visible_child (stack);
     }
 }

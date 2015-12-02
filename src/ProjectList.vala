@@ -50,6 +50,12 @@ public class ProjectManager.ProjectList : Gtk.Popover {
                 add_available_project (search_entry.text);
             }
         });
+
+        foreach (var project in Database.get_default ().get_saved_projects ()) {
+            var projectrow = new ProjectListRow (project);
+            projectrow.show_all ();
+            list_box.add (projectrow);
+        }
     }
 
     private void add_available_project (string text) {
@@ -70,6 +76,7 @@ public class ProjectManager.ProjectList : Gtk.Popover {
             var projectrow = new ProjectListRow (project);
             projectrow.show_all ();
             list_box.add (projectrow);
+            project.save ();
         }
     }
 
