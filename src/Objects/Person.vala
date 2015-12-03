@@ -20,25 +20,9 @@
  * Authored by: Corentin Noël <corentin@elementary.io>
  */
 
-public abstract class ProjectManager.Bug : GLib.Object {
-    public unowned Project project { public get; construct; }
+public abstract class ProjectManager.Person : GLib.Object {
     public unowned Platform platform { public get; construct; }
     public string uid { public get; construct; }
-    public string summary { public get; public set; }
-    public string description { public get; public set; }
-    public string status { public get; public set; }
-    public string importance { public get; public set; }
-    public Person owner { public get; public set; }
-    public string assignment { public get; public set; }
-    public string milestone { public get; public set; }
-    public string[] tags { public get; public set; }
-    /**
-     * Get all the possible values that the status field can have
-     */
-    public abstract Gee.TreeSet<string> get_possible_states ();
-    /**
-     * Get all the possible values that the status field can have when the bug should be hidden (closed, won't fix, released…)
-     */
-    public abstract Gee.TreeSet<string> get_hidden_states ();
-    public abstract int compare (Bug other);
+    public string name { public get; public set; }
+    public GLib.Icon avatar { public get; public set; }
 }

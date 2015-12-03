@@ -20,8 +20,71 @@
  * Authored by: Corentin Noël <corentin@elementary.io>
  */
 
-public class ProjectManager.LaunchpadBug : Bug {
-    public LaunchpadBug (string uid, string summary) {
-        Object (uid: uid, summary: summary);
+public class ProjectManager.Launchpad.Malone : Bug {
+    public Malone (Platform platform, Project project, string uid, string summary) {
+        Object (platform: platform, project: project, uid: uid, summary: summary);
+    }
+
+    public override Gee.TreeSet<string> get_possible_states () {
+        var states = new Gee.TreeSet<string> ();
+        states.add ("New");
+        states.add ("Incomplete");
+        states.add ("Opinion");
+        states.add ("Invalid");
+        states.add ("Won't Fix");
+        states.add ("Confirmed");
+        states.add ("Triaged");
+        states.add ("In Progress");
+        states.add ("Fix Committed");
+        states.add ("Fix Released");
+        return states;
+    }
+
+    public override Gee.TreeSet<string> get_hidden_states () {
+        var states = new Gee.TreeSet<string> ();
+        states.add ("Invalid");
+        states.add ("Won't Fix");
+        states.add ("Fix Released");
+        return states;
+    }
+
+    public override int compare (Bug other) {
+        var heat1 = get_state_heat (status);
+        var heat2 = get_state_heat (other.status);
+        if (heat1 > heat2) {
+            return 1;
+        } else if (heat1 < heat2) {
+            return -1;
+        } else {
+            return summary.collate (other.summary);
+        }
+    }
+    
+    private static int get_state_heat (string state) {
+        switch (state) {
+            case "New":
+                return 0;
+            case "Triaged":
+                return 1;
+            case "Confirmed":
+                return 2;
+            case "Incomplete":
+                return 3;
+            case "Opinion":
+                return 4;
+            case "In Progress":
+                return 5;
+            case "Fix Committed":
+                return 6;
+            case "Fix Released":
+                return 7;
+            case "Invalid":
+                return 8;
+            case "Won't Fix":
+                return 9;
+            default:
+                warning (state);
+                return 0;
+        }
     }
 }

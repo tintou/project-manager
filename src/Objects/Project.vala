@@ -26,7 +26,7 @@ public abstract class ProjectManager.Project : GLib.Object {
     public string name { public get; public set; }
     public string summary { public get; public set; }
     public string description { public get; public set; }
-    public string platform { public get; construct; }
+    public unowned Platform platform { public get; construct; }
     public GLib.Icon icon { public get; public set; }
     public GLib.Icon logo { public get; public set; }
     public bool loaded { public get; internal set; default=false; }
@@ -36,6 +36,7 @@ public abstract class ProjectManager.Project : GLib.Object {
     }
 
     public abstract bool load_project ();
+    public abstract Bug create_bug_object (string uid, string name);
     public abstract Gee.TreeSet<Bug> get_bugs ();
     public Gee.TreeSet<Bug> get_saved_bugs () {
         var returned_bugs = new Gee.TreeSet<Bug> ();
@@ -56,7 +57,7 @@ public abstract class ProjectManager.Project : GLib.Object {
                 // The platform value has to correspond to the current platform.
                 var id_field_2 = builder.add_id ("platform");
                 var platform_value = GLib.Value (typeof (string));
-                platform_value.set_string (platform);
+                platform_value.set_string (platform.name);
                 var id_param_2 = builder.add_expr_value (null, platform_value);
                 var id_cond_2 = builder.add_cond (Gda.SqlOperatorType.LIKE, id_field_2, id_param_2, 0);
 
@@ -67,7 +68,11 @@ public abstract class ProjectManager.Project : GLib.Object {
                 for (int i = 0; i < data_model.get_n_rows (); i++) {
                     var uid_val = data_model.get_value_at (data_model.get_column_index ("uid"), i).get_string ();
                     var name_val = data_model.get_value_at (data_model.get_column_index ("name"), i).get_string ();
-                    var bug = new LaunchpadBug (uid_val, name_val);
+                    var status_val = data_model.get_value_at (data_model.get_column_index ("status"), i).get_string ();
+                    var owner_val = data_model.get_value_at (data_model.get_column_index ("owner"), i).get_string ();
+                    var bug = create_bug_object (uid_val, name_val);
+                    bug.status = status_val;
+                    bug.owner = platform.get_person (owner_val);
                     bugs.set (uid_val, bug);
                 }
             } catch (Error e) {
@@ -89,7 +94,7 @@ public abstract class ProjectManager.Project : GLib.Object {
             var uid_val = Value (typeof (string));
             uid_val.set_string (uid);
             var platform_val = Value (typeof (string));
-            platform_val.set_string (platform);
+            platform_val.set_string (platform.name);
             builder.add_field_value_as_gvalue ("name", name_val);
             builder.add_field_value_as_gvalue ("uid", uid_val);
             builder.add_field_value_as_gvalue ("platform", platform_val);

@@ -22,8 +22,8 @@
 
 public static const string LAUNCHPAD_ROOT = "https://api.launchpad.net/devel/";
 
-public class ProjectManager.LaunchpadPlatform : Platform {
-    public LaunchpadPlatform () {
+public class ProjectManager.Launchpad.LPPlatform : Platform {
+    public LPPlatform () {
         Object (name: "Launchpad");
     }
 
@@ -37,8 +37,26 @@ public class ProjectManager.LaunchpadPlatform : Platform {
             }
         }
 
-        var proj = new LaunchpadProject (project_id);
+        var proj = new LPProject (this, project_id);
         proj.name = name;
         return proj;
+    }
+
+    public override Person get_person (string person_id) {
+        if (persons == null) {
+            get_saved_persons ();
+        }
+
+        var person = persons.get (person_id);
+        if (person == null) {
+            person = create_person_object (person_id);
+            persons.set (person_id, person);
+        }
+
+        return person;
+    }
+
+    public override Person create_person_object (string person_id) {
+        return new LPPerson (this, person_id);
     }
 }

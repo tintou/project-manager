@@ -40,7 +40,7 @@ public class ProjectManager.Database : GLib.Object {
 
     construct {
         platforms = new Gee.TreeSet<Platform> ();
-        platforms.add (new LaunchpadPlatform ());
+        platforms.add (new Launchpad.LPPlatform ());
         init_database ();
     }
 
@@ -109,6 +109,7 @@ public class ProjectManager.Database : GLib.Object {
 
         create_projects_table ();
         create_bugs_table ();
+        create_persons_table ();
     }
 
     private void create_projects_table () {
@@ -139,6 +140,30 @@ public class ProjectManager.Database : GLib.Object {
                         "project", typeof (string), Gda.ServerOperationCreateTableFlag.NOTHING_FLAG,
                         "uid", typeof (string), Gda.ServerOperationCreateTableFlag.NOTHING_FLAG,
                         "name", typeof (string), Gda.ServerOperationCreateTableFlag.NOTHING_FLAG,
+                        "status", typeof (string), Gda.ServerOperationCreateTableFlag.NOTHING_FLAG,
+                        "owner", typeof (string), Gda.ServerOperationCreateTableFlag.NOTHING_FLAG,
+                        "rowid", typeof (int64), Gda.ServerOperationCreateTableFlag.PKEY_AUTOINC_FLAG);
+        if (e != null) {
+            critical (e.message);
+        } else {
+            try {
+                operation.perform_create_table ();
+            } catch (Error e) {
+                // e.code == 1 is when the table already exists.
+                if (e.code != 1) {
+                    critical (e.message);
+                }
+            }
+        }
+    }
+
+    private void create_persons_table () {
+        Error e = null;
+        var operation = Gda.ServerOperation.prepare_create_table (connection, "persons", e,
+                        "platform", typeof (string), Gda.ServerOperationCreateTableFlag.NOTHING_FLAG,
+                        "uid", typeof (string), Gda.ServerOperationCreateTableFlag.NOTHING_FLAG,
+                        "name", typeof (string), Gda.ServerOperationCreateTableFlag.NOTHING_FLAG,
+                        "avatar", typeof (string), Gda.ServerOperationCreateTableFlag.NOTHING_FLAG,
                         "rowid", typeof (int64), Gda.ServerOperationCreateTableFlag.PKEY_AUTOINC_FLAG);
         if (e != null) {
             critical (e.message);

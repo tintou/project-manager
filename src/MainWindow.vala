@@ -37,6 +37,7 @@ public class ProjectManager.MainWindow : Gtk.Window {
 
         var list_store = new Gtk.ListStore (2, typeof (string), typeof (Project));
         project_combobox = new Gtk.ComboBox.with_model (list_store);
+        project_combobox.valign = Gtk.Align.CENTER;
         var renderer = new Gtk.CellRendererText ();
         project_combobox.pack_start (renderer, true);
         project_combobox.add_attribute (renderer, "text", 0);
@@ -110,7 +111,7 @@ public class ProjectManager.MainWindow : Gtk.Window {
     }
 
     private void focus_project (Project project) {
-        var stack_name = "%s-%s".printf (project.platform, project.uid);
+        var stack_name = "%s-%s".printf (project.platform.name, project.uid);
         var stack = main_stack.get_child_by_name (stack_name) as Gtk.Stack;
         if (stack == null) {
             stack = new Gtk.Stack ();

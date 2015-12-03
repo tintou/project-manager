@@ -15,12 +15,14 @@ vala_precompile(VALA_C ${EXEC_NAME}
     Settings.vala
     Objects/Platform.vala
     Objects/Bug.vala
+    Objects/Person.vala
     Objects/Project.vala
     Panels/Blueprints.vala
     Panels/Bugs.vala
     Panels/Code.vala
     Panels/Overview.vala
     Platform/Launchpad/Platform.vala
+    Platform/Launchpad/Person.vala
     Platform/Launchpad/Project.vala
     Platform/Launchpad/Bug.vala
     ${CMAKE_CURRENT_BINARY_DIR}/config.vala
