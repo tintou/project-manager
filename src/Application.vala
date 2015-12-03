@@ -22,7 +22,7 @@
 
 namespace ProjectManager {
     const string project_manager = N_("About Project Manager");
-    public class ProjectManager : Granite.Application {
+    public class App : Granite.Application {
         MainWindow main_window;
 
         construct {
@@ -64,7 +64,7 @@ namespace ProjectManager {
     }
 
     public static int main (string[] args) {
-        var application = new ProjectManager ();
+        var application = new App ();
         return application.run (args);
     }
 }

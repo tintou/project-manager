@@ -64,17 +64,50 @@ public class ProjectManager.Panels.Bugs : Gtk.Grid {
         expand = true;
         var pane = new Gtk.Paned (Gtk.Orientation.HORIZONTAL);
         list_box = new Gtk.ListBox ();
+        list_box.activate_on_single_click = true;
         list_box.set_sort_func ((row1, row2) => sort (row1, row2));
         list_box.set_header_func ((row, before) => header (row, before));
+        list_box.row_activated.connect ((row) => {
+            var headrow = row as BugHeadRow;
+            if (headrow != null) {
+                create_bug_cards (headrow.bug);
+            }
+        });
+
         var scrolled_left = new Gtk.ScrolledWindow (null, null);
+        scrolled_left.hscrollbar_policy = Gtk.PolicyType.NEVER;
         scrolled_left.expand = true;
         scrolled_left.add (list_box);
         bug_list_box = new Gtk.ListBox ();
+        bug_list_box.get_style_context ().add_class ("deck");
         var scrolled_right = new Gtk.ScrolledWindow (null, null);
+        scrolled_right.hscrollbar_policy = Gtk.PolicyType.NEVER;
         scrolled_right.add (bug_list_box);
         pane.pack1 (scrolled_left, false, false);
         pane.pack2 (scrolled_right, false, false);
         add (pane);
+    }
+
+    private void create_bug_cards (Bug bug) {
+        bug_list_box.get_children ().foreach ((child) => {
+            child.destroy ();
+        });
+
+        var card = new ProjectManager.Card ();
+        var grid = card.get_content_grid ();
+        var title = new Gtk.Label (bug.summary);
+        title.wrap = true;
+        title.hexpand = true;
+        title.get_style_context ().add_class ("h2");
+        ((Gtk.Misc) title).xalign = 0;
+        var reported = new Gtk.Label (_("Reported by %s").printf (bug.owner.name));
+        ((Gtk.Misc) reported).xalign = 0;
+        var separator = new Gtk.Separator (Gtk.Orientation.HORIZONTAL);
+        grid.attach (title, 0, 0, 1, 1);
+        grid.attach (reported, 0, 1, 1, 1);
+        //grid.attach (separator, 0, 2, 1, 1);
+        card.show_all ();
+        bug_list_box.add (card);
     }
 
     private int sort (Gtk.ListBoxRow row1, Gtk.ListBoxRow row2) {

@@ -66,9 +66,9 @@ public class ProjectManager.Launchpad.Malone : Bug {
                 return 0;
             case "Triaged":
                 return 1;
-            case "Confirmed":
-                return 2;
             case "Incomplete":
+                return 2;
+            case "Confirmed":
                 return 3;
             case "Opinion":
                 return 4;
