@@ -26,13 +26,13 @@ namespace ProjectManager {
         MainWindow main_window;
 
         construct {
-            application_id = "org.pantheon.project-manager";
+            application_id = "com.github.tintou.project-manager";
             flags = ApplicationFlags.FLAGS_NONE;
             Intl.setlocale (LocaleCategory.ALL, "");
             Intl.textdomain (Build.GETTEXT_PACKAGE);
 
             program_name = _("Project Manager");
-            app_years = "2015";
+            app_years = "2015-2017";
             app_icon = Build.DESKTOP_ICON;
 
             build_data_dir = Build.DATADIR;
@@ -41,11 +41,11 @@ namespace ProjectManager {
             build_version = Build.VERSION;
             build_version_info = Build.VERSION_INFO;
 
-            app_launcher = "project-manager.desktop";
-            main_url = "https://launchpad.net/project-manager";
-            bug_url = "https://bugs.launchpad.net/project-manager";
-            help_url = "https://answers.launchpad.net/project-manager"; 
-            translate_url = "https://translations.launchpad.net/project-manager";
+            app_launcher = application_id + ".desktop";
+            main_url = "https://github.com/tintou/project-manager";
+            bug_url = "https://github.com/tintou/project-manager/issues";
+            help_url = "https://github.com/tintou/project-manager/issues"; 
+            translate_url = "https://github.com/tintou/project-manager";
             about_authors = { "Corentin Noël <corentin@elementary.io>" };
             about_comments = "";
             about_translators = _("translator-credits");

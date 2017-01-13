@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+​  <id>com.github.tintou.project-manager</id>
+  <metadata_license>CC0</metadata_license>
+  <project_license>GPL-3.0+</project_license>
+  <name>Project Manager</name>
+  <summary>The fast project manager</summary>
+  <description>
+    <p>
+      Don't spend too much time on project management.
+    </p>
+  </description>
+  <url type="homepage">https://github.com/tintou/project-manager/</url>
+  <update_contact>corentin_at_elementary.io</update_contact>
+</application>

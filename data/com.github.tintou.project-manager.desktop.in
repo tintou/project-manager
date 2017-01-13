@@ -3,11 +3,11 @@ Name=@APP_NAME@
 Comment=@RELEASE_NAME@
 Exec=@EXEC_NAME@ %U
 Icon=@DESKTOP_ICON@
-Keywords=install;uninstall;remove;catalogue;store;apps;updates;software;
+Keywords=developer;api;github;launchpad;git;bzr;bazaar;project;code;
 Terminal=false
 Type=Application
 StartupNotify=true
-Categories=GNOME;GTK;System;PackageManager;
+Categories=GNOME;GTK;Development;
 X-GNOME-Gettext-Domain=@GETTEXT_PACKAGE@
 Actions=AboutDialog;
 

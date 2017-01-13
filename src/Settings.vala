@@ -38,7 +38,7 @@ public class ProjectManager.Settings : Granite.Services.Settings {
         return main_settings;
     }
 
-    private Settings ()  {
-        base ("org.pantheon.project-manager.settings");
+    private Settings () {
+        base ("com.github.tintou.project-manager.settings");
     }
 }

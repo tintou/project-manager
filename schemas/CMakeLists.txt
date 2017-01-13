@@ -1,2 +1,2 @@
 include (GSettings)
-add_schema ("org.pantheon.project-manager.gschema.xml")
+add_schema ("com.github.tintou.project-manager.gschema.xml")
